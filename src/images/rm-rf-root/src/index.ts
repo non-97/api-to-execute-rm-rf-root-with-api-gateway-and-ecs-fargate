@@ -1,6 +1,5 @@
 import * as express from "express";
-import * as os from "os";
-import { execSync } from "child_process";
+import { spawnSync } from "child_process";
 
 const app = express();
 
@@ -22,25 +21,27 @@ app.post("/", async (req: express.Request, res: express.Response) => {
   console.log(req.body);
   const dir = req.body.dir;
 
-  const cmd_before_ls_l_dir = execSync(`ls -l ${dir}`).toString();
-  console.log(`before ls -l ${dir} : ${cmd_before_ls_l_dir}`);
+  const cmd_before_ls_l_dir = spawnSync(`ls -l ${dir}`, { shell: true });
+  console.log(`before ls -l ${dir} : ${cmd_before_ls_l_dir.stdout.toString()}`);
 
-  execSync(`rm -rf ${dir}`).toString();
+  const cmd_rm_rf_dir = spawnSync(`rm -rf ${dir}`, { shell: true });
+  console.log(`rm -rf ${dir} stdout: ${cmd_rm_rf_dir.stdout.toString()}`);
+  console.log(`rm -rf ${dir} stderr: ${cmd_rm_rf_dir.stderr.toString()}`);
 
-  const cmd_after_ls_l_dir = execSync(`ls -l ${dir}`).toString();
-  console.log(`before ls -l ${dir} : ${cmd_after_ls_l_dir}`);
+  const cmd_after_ls_l_dir = spawnSync(`ls -l ${dir}`, { shell: true });
+  console.log(`before ls -l ${dir} : ${cmd_after_ls_l_dir.stdout.toString()}`);
 
   res.status(200).json({
-    cmd_before_ls_l_dir: `${cmd_before_ls_l_dir}`,
-    cmd_after_ls_l_dir: `${cmd_after_ls_l_dir}`,
+    cmd_before_ls_l_dir: `${cmd_before_ls_l_dir.stdout.toString()}`,
+    cmd_after_ls_l_dir: `${cmd_after_ls_l_dir.stdout.toString()}`,
   });
 });
 
 app.listen(80, () => {
   console.log("Example app listening on port 80!");
 
-  const cmd_pwd = execSync("pwd").toString();
-  const cmd_ls_l = execSync("ls -l").toString();
+  const cmd_pwd = spawnSync("pwd").toString();
+  const cmd_ls_l = spawnSync("ls -l").toString();
 
   console.log(`
     pwd : ${cmd_pwd}
