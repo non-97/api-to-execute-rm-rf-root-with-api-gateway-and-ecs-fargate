@@ -21,13 +21,16 @@ app.post("/", async (req: express.Request, res: express.Response) => {
   console.log(req.body);
   const dir = req.body.dir;
 
+  // Run "ls -l" before "rm -rf
   const cmd_before_ls_l_dir = spawnSync(`ls -l ${dir}`, { shell: true });
   console.log(`before ls -l ${dir} : ${cmd_before_ls_l_dir.stdout.toString()}`);
 
+  // Run "rm -rf"
   const cmd_rm_rf_dir = spawnSync(`rm -rf ${dir}`, { shell: true });
   console.log(`rm -rf ${dir} stdout: ${cmd_rm_rf_dir.stdout.toString()}`);
   console.log(`rm -rf ${dir} stderr: ${cmd_rm_rf_dir.stderr.toString()}`);
 
+  // Run "ls -l" after "rm -rf
   const cmd_after_ls_l_dir = spawnSync(`ls -l ${dir}`, { shell: true });
   console.log(`before ls -l ${dir} : ${cmd_after_ls_l_dir.stdout.toString()}`);
 
@@ -40,8 +43,8 @@ app.post("/", async (req: express.Request, res: express.Response) => {
 app.listen(80, () => {
   console.log("Example app listening on port 80!");
 
-  const cmd_pwd = spawnSync("pwd").toString();
-  const cmd_ls_l = spawnSync("ls -l").toString();
+  const cmd_pwd = spawnSync("pwd", { shell: true }).stdout.toString();
+  const cmd_ls_l = spawnSync("ls -l", { shell: true }).stdout.toString();
 
   console.log(`
     pwd : ${cmd_pwd}
