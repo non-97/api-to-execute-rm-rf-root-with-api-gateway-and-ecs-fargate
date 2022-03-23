@@ -98,7 +98,7 @@ export class ApiStack extends Stack {
       );
 
     loadBalancedFargateService.service.connections.allowFrom(
-      ec2.Peer.anyIpv4(),
+      ec2.Peer.ipv4(vpc.vpcCidrBlock),
       ec2.Port.tcp(80)
     );
 
